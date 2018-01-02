@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo "Reform full install (yes/no; default: no):"
+read FULL_INSTALL
+
+if [ "$FULL_INSTALL" = "yes" ]; then
+    apt-get update
+    apt-get upgrade -y
+    apt-get install -y apt-transport-https ca-certificates curl software-properties-common wget apache2-utils openvpn socat iptables-persistent dnsmasq
+
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    apt-key fingerprint 0EBFCD88
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+    apt-get update
+    apt-get install -y docker-ce
+    apt-cache madison docker-ce
+
+    curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+fi
+
+echo "VPN name:"
+read NAME
+
+echo "Protocol (udp/tcp):"
+read PROTOCOL
+
+echo "Host:"
+read HOST
+
+echo "Port:"
+read PORT
+
+if [ -d "/vpn/$NAME" ]; then
+    echo "Directory exists. Please delete /vpn/$NAME or uninstall the VPN first."
+    exit;
+fi
+
+mkdir -p "/vpn/$NAME"
+
+cp ${DIRNAME}/package/* /vpn/${NAME}/
+cp -r ${DIRNAME}/package/clients /vpn/${NAME}/
+cp -r ${DIRNAME}/package/.config /vpn/${NAME}/
+chmod -R +x /vpn/${NAME}/*
+
+sed -i "s#{{NAME}}#$NAME#" /vpn/${NAME}/.config/docker.yml
+sed -i "s#{{HOST}}#$HOST#" /vpn/${NAME}/.config/docker.yml
+sed -i "s#{{PORT}}#$PORT#" /vpn/${NAME}/.config/docker.yml
+sed -i "s#{{PROTOCOL}}#$PROTOCOL#" /vpn/${NAME}/.config/docker.yml
+
+sed -i "s#{{NAME}}#$NAME#" /vpn/${NAME}/.config/vars.sh
+sed -i "s#{{HOST}}#$HOST#" /vpn/${NAME}/.config/vars.sh
+sed -i "s#{{PORT}}#$PORT#" /vpn/${NAME}/.config/vars.sh
+sed -i "s#{{PROTOCOL}}#$PROTOCOL#" /vpn/${NAME}/.config/vars.sh
+
+docker volume create "vpn_$NAME"
+
+docker run -v vpn_${NAME}:/etc/openvpn --rm newtoncodes/vpn-openvpn-dnsmasq ovpn_genconfig -u ${PROTOCOL}://${HOST}:${PORT}
+docker run -v vpn_${NAME}:/etc/openvpn --rm -it newtoncodes/vpn-openvpn-dnsmasq ovpn_initpki

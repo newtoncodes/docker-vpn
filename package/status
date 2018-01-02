@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source ${DIRNAME}/.config/vars.sh
+
+docker run -v vpn_${NAME}:/etc/openvpn --rm -it newtoncodes/vpn-openvpn-dnsmasq ovpn_status
