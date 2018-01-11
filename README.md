@@ -1,4 +1,4 @@
-# VPN server
+# Docker VPN
 
 Docker based vpn openvpn server with dnsmasq.
 

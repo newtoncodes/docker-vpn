@@ -1,6 +1,25 @@
 {
   "name": "docker-vpn",
-  "version": "1.0.3",
+  "version": "1.0.6",
+  "description": "Openvpn server with dnsmasq running on docker (cli). Very easy to use (for people, who forget a lot).",
+  "keywords": [
+    "openvpn",
+    "dnsmasq",
+    "docker",
+    "vpn",
+    "server",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/newtoncodes/docker-vpn"
+  },
+  "bugs": {
+    "url": "https://github.com/newtoncodes/docker-vpn"
+  },
+  "homepage": "https://github.com/newtoncodes/docker-vpn",
+  "author": "Christian Nikolov <christian@newton.codes> (https://github.com/newtoncodes)",
+  "license": "MIT",
   "dependencies": {
     "dotenv": "=4.0.0",
     "yargs": "=10.0.3"
@@ -8,7 +27,7 @@
   "scripts": {
     "build-image": "node ./bin/dev/build.js",
     "push-image": "npm run build-image && node ./bin/dev/push.js",
-    "postpublish": "npm run push-image"
+    "publish": "npm run push-image"
   },
   "bin": {
     "docker-vpn": "node ./bin/app.js",
