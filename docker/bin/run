@@ -1,0 +1,6 @@
+#!/bin/bash
+
+dir=$(dirname "$0")
+source ${dir}/../lib/vpn.sh
+
+run

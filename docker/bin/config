@@ -1,0 +1,26 @@
+#!/bin/sh
+
+type=$1
+
+if [ "$type" = "vars" ]; then
+    exec nano /vpn/config/vars.env
+    exit 0
+fi
+
+if [ "$type" = "server" ]; then
+    exec nano /vpn/config/server.conf
+    exit 0
+fi
+
+if [ "$type" = "client" ]; then
+    exec nano /vpn/config/client.conf
+    exit 0
+fi
+
+if [ "$type" = "hosts" ]; then
+    exec nano /vpn/config/hosts
+    exit 0
+fi
+
+echo "Unknown config type: $type."
+echo "Types: vars, server, client, hosts"

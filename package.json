@@ -1,0 +1,17 @@
+{
+  "name": "docker-vpn",
+  "version": "1.0.0",
+  "dependencies": {
+    "dotenv": "=4.0.0",
+    "yargs": "=10.0.3"
+  },
+  "scripts": {
+    "build-image": "node ./bin/dev/build.js",
+    "push-image": "npm run build && node ./bin/dev/push.js",
+    "postpublish": "npm run push-image"
+  },
+  "bin": {
+    "docker-vpn": "node ./bin/app.js",
+    "vpn": "node ./bin/app.js"
+  }
+}

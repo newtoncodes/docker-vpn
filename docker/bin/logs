@@ -1,0 +1,4 @@
+#!/bin/sh
+
+tail -f /vpn/log/current.log
+exit 0

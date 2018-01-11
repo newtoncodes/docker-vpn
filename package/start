@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-DIRNAME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-source ${DIRNAME}/.config/vars.sh
-
-docker-compose -f ${DIRNAME}/.config/docker.yml up -d
