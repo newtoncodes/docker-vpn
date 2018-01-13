@@ -1,25 +1,21 @@
 'use strict';
 
-const exists = require('fs').existsSync;
-const unlink = require('fs').unlinkSync;
-const exec = require('child_process').execSync;
+const {exec, exists, unlink} = require('../lib');
 
 
 module.exports = {
     stop: (name) => {
         if (!exists('/var/lib/docker/volumes/vpn_' + name)) {
-            console.error('Service "' + name + '" does not exist.');
-            process.exit(1);
+            throw new Error('Service "' + name + '" does not exist.');
         }
     
         if (!exists('/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml')) {
-            console.error('Not started yet.');
-            process.exit(1);
+            throw new Error('Not started yet.');
         }
     
         console.log('Stopping ' + name + '...');
         
-        exec('docker-compose -f "' + '/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml' + '" down', {stdio: 'inherit'});
+        exec('docker-compose -f "' + '/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml' + '" down');
         unlink('/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml');
     
         exec('docker network rm "vpn_' + name + '"');

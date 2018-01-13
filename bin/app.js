@@ -6,11 +6,12 @@ const exists = require('fs').existsSync;
 const exec = require('child_process').execSync;
 const yargs = require('yargs');
 
-const install = require('./master/install').install;
-const uninstall = require('./master/uninstall').uninstall;
-const command = require('./server/command').command;
-const start = require('./server/start').start;
-const stop = require('./server/stop').stop;
+const install = require('../src/master/install').install;
+const uninstall = require('../src/master/uninstall').uninstall;
+const iptables = require('../src/master/iptables').iptables;
+const command = require('../src/server/command').command;
+const start = require('../src/server/start').start;
+const stop = require('../src/server/stop').stop;
 
 
 const options = {
@@ -72,172 +73,139 @@ const options = {
         alias: 's',
         description: 'Save to file',
         type: 'string'
+    },
+    
+    interface: {
+        alias: 'i',
+        description: 'Public network interface to allow.',
+        type: 'string'
     }
 };
+
+const resolve = (promise, cb = () => process.exit(0)) => {
+    return promise.then(cb).catch(e => {
+        console.error('Error: ' + e.message);
+        process.exit(1);
+    });
+};
+
 
 const commands = {
     install: {
         command: 'install [server]',
         description: 'Install a new vpn service config.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', Object.assign({}, options.server, {coerce: undefined}))
-        },
+        builder: (yargs) => yargs
+            .positional('server', Object.assign({}, options.server, {coerce: undefined})),
     
-        handler: (argv) => {
-            install(argv.server);
-        }
+        handler: (argv) => resolve(install(argv.server))
     },
     uninstall: {
         command: 'uninstall [server]',
         description: 'Uninstall a vpn service config.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server),
     
-        handler: (argv) => {
-            uninstall(argv.server);
-        }
+        handler: (argv) => resolve(uninstall(argv.server))
     },
     start: {
         command: 'start <server>',
         description: 'Start a vpn service.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server),
     
-        handler: (argv) => {
-            start(argv.server);
-            process.exit();
-        }
+        handler: (argv) => resolve(start(argv.server))
     },
     stop: {
         command: 'stop <server>',
         description: 'Stop a vpn service.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server),
     
-        handler: (argv) => {
-            stop(argv.server);
-            process.exit();
-        }
+        handler: (argv) => resolve(stop(argv.server))
     },
     restart: {
         command: 'restart <server>',
         description: 'Restart a vpn service.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server),
     
-        handler: (argv) => {
-            stop(argv.server);
-            start(argv.server);
-            process.exit();
-        }
+        handler: (argv) => resolve(stop(argv.server), () => resolve(start(argv.server)))
     },
     config: {
         command: 'config <server> [type]',
         description: 'Edit one of the server configs.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-                .positional('type', options.config)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server)
+            .positional('type', options.config),
     
-        handler: (argv) => {
-            command(argv.server, 'config', [argv.type]);
-            process.exit();
-        }
+        handler: (argv) => resolve(command(argv.server, 'config', [argv.type]))
     },
     logs: {
         command: 'logs <server>',
         description: 'Follow the vpn log.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server),
     
-        handler: (argv) => {
-            command(argv.server, 'logs');
-            process.exit();
-        }
+        handler: (argv) => resolve(command(argv.server, 'logs'))
     },
     status: {
         command: 'status <server>',
         description: 'Follow the vpn status.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server),
     
-        handler: (argv) => {
-            command(argv.server, 'status');
-            process.exit();
-        }
+        handler: (argv) => resolve(command(argv.server, 'status'))
     },
     clients: {
         command: 'clients <server>',
         description: 'List all clients.',
     
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server),
     
-        handler: (argv) => {
-            command(argv.server, 'clients/list');
-            process.exit();
-        }
+        handler: (argv) => resolve(command(argv.server, 'clients/list'))
     },
     issue: {
         command: 'issue <server> [client] [ip] [-s <file>]',
         description: 'Issue a new client certificate and config.',
         
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-                .positional('client', options.client)
-                .positional('ip', options.ip)
-                .option('save', options.save)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server)
+            .positional('client', options.client)
+            .positional('ip', options.ip)
+            .option('save', options.save),
     
-        handler: (argv) => {
-            command(argv.server, 'clients/create', [argv.client, argv.ip, argv.save], () => process.exit());
-        }
+        handler: (argv) => resolve(command(argv.server, 'clients/create', [argv.client, argv.ip, argv.save]))
     },
     revoke: {
         command: 'revoke <server> [client]',
         description: 'Revoke a client certificate.',
         
-        builder: (yargs) => {
-            return yargs
-                .positional('server', options.server)
-                .positional('client', options.client)
-        },
+        builder: (yargs) => yargs
+            .positional('server', options.server)
+            .positional('client', options.client),
         
-        handler: (argv) => {
-            command(argv.server, 'clients/revoke', [argv.client], () => {
-                console.log('Because of an unknown reason, the server has to be restarted for the CRL to take effect.');
-                console.log('Server will restart now...');
-                
-                stop(argv.server);
-                start(argv.server);
-                process.exit();
-            });
-        }
+        handler: (argv) => resolve(command(argv.server, 'clients/revoke', [argv.client]), () => {
+            resolve(stop(argv.server, () => resolve(start(argv.server))));
+        })
+    },
+    iptables: {
+        command: 'iptables [-i <interface>] [-s <file>]',
+        description: 'Print all iptables accept rules.',
+        
+        builder: (yargs) => yargs
+            .positional('interface', options.interface)
+            .positional('save', options.save),
+        
+        handler: (argv) => resolve(iptables(argv.interface, argv.save))
     },
     dependencies: {
         command: 'install-dependencies',

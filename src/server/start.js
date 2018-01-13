@@ -1,33 +1,16 @@
 'use strict';
 
-const dotenv = require('dotenv');
-const exists = require('fs').existsSync;
-const writeFile = require('fs').writeFileSync;
-const readFile = require('fs').readFileSync;
-const unlink = require('fs').unlinkSync;
-const exec = require('child_process').execSync;
-const version = require('../../package.json').version;
-
-const getVars = (name) => {
-    if (!exists('/var/lib/docker/volumes/vpn_' + name + '/_data/config/vars.env')) {
-        console.error('Configs not installed. Please run install first.');
-        process.exit(1);
-    }
-    
-    return dotenv.parse(readFile('/var/lib/docker/volumes/vpn_' + name + '/_data/config/vars.env'));
-};
+const {exec, exists, unlink, getVars,  version, writeFile} = require('../lib');
 
 
 module.exports = {
     start: (name) => {
         if (!exists('/var/lib/docker/volumes/vpn_' + name)) {
-            console.error('Service "' + name + '" does not exist.');
-            process.exit(1);
+            throw new Error('Service "' + name + '" does not exist.');
         }
     
         if (exists('/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml')) {
-            console.error('Already started.');
-            process.exit(1);
+            throw new Error('Already started.');
         }
     
         console.log('Starting ' + name + '...');
@@ -72,7 +55,7 @@ module.exports = {
         }
     
         try {
-            exec('docker-compose -f "' + '/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml' + '" up -d', {stdio: 'inherit'});
+            exec('docker-compose -f "' + '/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml' + '" up -d');
         } catch (e) {
             unlink('/var/lib/docker/volumes/vpn_' + name + '/_data/service.yml');
             exec('docker network rm "vpn_' + name + '"');
