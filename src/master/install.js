@@ -7,7 +7,7 @@ module.exports = {
     install: async (...args) => {
         let name = await askServerName((args[0] || '').trim(), false);
     
-        if (!exists('/var/lib/docker/volumes/vpn_' + name)) {
+        if (exists('/var/lib/docker/volumes/vpn_' + name)) {
             throw new Error('Service "' + name + '" already exists. Uninstall it first or change the name.');
         }
     
