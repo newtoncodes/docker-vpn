@@ -24,17 +24,17 @@ for (let i in ni) {
 }
 
 
-module.exports = {
+const lib = {
     getVolumePath: v => '/var/lib/docker/volumes/vpn_' + v,
     getYmlPath: v => '/var/lib/docker/volumes/vpn_' + v + '/_data/service.yml',
     getVarsPath: v => '/var/lib/docker/volumes/vpn_' + v + '/_data/config/vars.env',
     
     getVars: (name) => {
-        if (!this.vpnExists(name)) throw new Error('Configs not installed. Please run install first.');
-        return dotenv.parse(readFile(this.getVarsPath(name)));
+        if (!lib.vpnExists(name)) throw new Error('Configs not installed. Please run install first.');
+        return dotenv.parse(readFile(lib.getVarsPath(name)));
     },
     
-    vpnExists: (v) => exists(this.getVarsPath(v)),
+    vpnExists: (v) => exists(lib.getVarsPath(v)),
     
     ask: async (question, validate, initial) => {
         if (initial !== undefined && validate(initial)) return initial;
@@ -45,7 +45,7 @@ module.exports = {
     },
     
     askServerName: async (initial, allowNull) => {
-        return await this.ask('Enter the server\'s name: ', n => {
+        return await lib.ask('Enter the server\'s name: ', n => {
             if (!n && allowNull) return true;
             if (!n) return false;
             return !!n;
@@ -53,7 +53,7 @@ module.exports = {
     },
     
     askClientName: async (initial, allowNull) => {
-        return await this.ask('Enter the client\'s name: ', n => {
+        return await lib.ask('Enter the client\'s name: ', n => {
             if (!n && allowNull) return true;
             if (!n) return false;
             return !!n;
@@ -61,7 +61,7 @@ module.exports = {
     },
     
     askClientIp: async (initial, allowNull) => {
-        return await this.ask('Enter the client\'s ip' + (allowNull ? ' (leave empty for default)' : '') + ': ', n => {
+        return await lib.ask('Enter the client\'s ip' + (allowNull ? ' (leave empty for default)' : '') + ': ', n => {
             if (!n && allowNull) return true;
             if (!n) return false;
             return !(n && !n.match(/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/));
@@ -69,7 +69,7 @@ module.exports = {
     },
     
     askIface: async (initial) => {
-        return await this.ask('Please enter the public interface to use.\nOptions: ' + interfaces.join(', ') + ':\n', n => {
+        return await lib.ask('Please enter the public interface to use.\nOptions: ' + interfaces.join(', ') + ':\n', n => {
             return (n && interfaces.includes(n));
         }, initial);
     },
@@ -106,3 +106,6 @@ module.exports = {
      */
     exec: (cmd) => exec(cmd, {stdio: 'inherit'}).toString('utf8'),
 };
+
+
+module.exports = lib;
