@@ -59,13 +59,13 @@ module.exports = {
                     if (buffer && (!file || !came)) process.stdout.write(buffer + '\n');
         
                     if (code !== 0) {
-                        reject(new Error('Unexpected error.'));
+                        return reject(new Error('Unexpected error.'));
                     }
         
                     if (file) {
                         let config = stdout.split('#----BEGIN CONFIG----#');
                         if (config.length !== 2) {
-                            reject(new Error('Unknown command response.'));
+                            return reject(new Error('Unknown command response.'));
                         }
             
                         config = config[1].split('#----END CONFIG----#')[0];
