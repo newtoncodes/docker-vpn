@@ -9,7 +9,7 @@ module.exports = {
     command: async (name, cmd, args) => {
         if (cmd === 'clients/create') {
             let client = await askClientName((args[0] || '').trim(), false);
-            let ip = await askClientIp((args[0] || '').trim(), true);
+            let ip = await askClientIp((args[1] || '').trim(), true);
             
             let file = args[2] || null;
     
