@@ -9,9 +9,9 @@ const iptables = (volumes, iface) => {
     let rule = '';
     
     for (let v of volumes) {
-        let vars = getVars(v);
+        let vars = getVars(v.replace(/^vpn_/, ''));
         let protocol = (vars['PROTOCOL'] || 'tcp').toLowerCase();
-        let port = parseInt(vars['PORT'] || 1194);
+        let port = parseInt(vars['PORT'] || '1194');
         
         rule += `
 iptables -A INPUT  --dport ${port} -p ${protocol} -i ${iface} -m state --state NEW,ESTABLISHED -j ACCEPT
