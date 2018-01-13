@@ -2,7 +2,6 @@
 
 'use strict';
 
-const exists = require('fs').existsSync;
 const exec = require('child_process').execSync;
 const yargs = require('yargs');
 
@@ -84,7 +83,7 @@ const options = {
 
 const resolve = (promise, cb = () => process.exit(0)) => {
     return promise.then(cb).catch(e => {
-        console.error('Error: ' + e.message);
+        e.message && console.error('Error: ' + e.message);
         process.exit(1);
     });
 };
