@@ -59,7 +59,7 @@ module.exports = {
                     if (buffer && (!file || !came)) process.stdout.write(buffer + '\n');
         
                     if (code !== 0) {
-                        return reject(new Error('Unexpected error.'));
+                        return reject(new Error(''));
                     }
         
                     if (file) {
