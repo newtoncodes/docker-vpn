@@ -2,7 +2,7 @@
 
 const {exists, writeFile, getVars, askIface} = require('../lib');
 const interfaces = require('../lib').interfaces;
-const exec = require('../lib').exec;
+const exec = require('child_process').execSync;
 
 
 const iptables = (volumes, iface) => {
@@ -32,8 +32,14 @@ module.exports = {
             console.log('');
             return;
         }
+    
+        console.log(ls);
         
-        let volumes = ls.split('\n').map(r => r.split(/s+/)[1].trim()).slice(1).filter(v => v.indexOf('vpn_') === 0).filter(v => {
+        let volumes = ls.split('\n').map(r => {
+            console.log(r);
+            console.log(r.split(/s+/)[1]);
+            return r.split(/s+/)[1].trim();
+        }).slice(1).filter(v => v.indexOf('vpn_') === 0).filter(v => {
             return exists('/var/lib/docker/volumes/' + v + '/_data/config/vars.env');
         });
         
