@@ -104,7 +104,7 @@ const lib = {
      * @param {string} cmd
      * @return {string}
      */
-    exec: (cmd) => exec(cmd, {stdio: 'inherit'}).toString('utf8'),
+    exec: (cmd) => (exec(cmd, {stdio: 'inherit'}) || '')['toString']('utf8'),
 };
 
 

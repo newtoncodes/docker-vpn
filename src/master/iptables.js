@@ -25,7 +25,7 @@ iptables -A OUTPUT --sport ${port} -p ${protocol} -i ${iface} -m state --state E
 
 module.exports = {
     iptables: async (iface, file) => {
-        let ls = exec('docker volume ls').toString('utf8');
+        let ls = (exec('docker volume ls') || '').toString('utf8');
         ls = (ls || '').trim();
         
         if (ls.indexOf('DRIVER') !== -1) {
