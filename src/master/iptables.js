@@ -37,8 +37,8 @@ module.exports = {
         
         let volumes = ls.split('\n').map(r => {
             console.log(r);
-            console.log(r.split(/s+/)[1]);
-            return r.split(/s+/)[1].trim();
+            console.log(r.split(/\s+/)[1]);
+            return r.split(/\s+/)[1].trim();
         }).slice(1).filter(v => v.indexOf('vpn_') === 0).filter(v => {
             return exists('/var/lib/docker/volumes/' + v + '/_data/config/vars.env');
         });
