@@ -19,7 +19,7 @@ const ask = require('util').promisify((q, c) => readline.rli.question(q, a => c(
 let interfaces = [];
 let ni = require('os').networkInterfaces();
 for (let i in ni) {
-    if (i === 'lo' || i.match(/^tun\d+$/)) continue;
+    if (i === 'lo' || i.indexOf('br-') === 0 || i.indexOf('vethae') === 0 || i.match(/^tun\d+$/)) continue;
     interfaces.push(i);
 }
 
