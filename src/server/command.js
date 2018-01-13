@@ -22,7 +22,7 @@ module.exports = {
                 throw new Error('Output file is not writable.');
             }
         
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 let stdout = '';
                 let buffer = '';
                 let came = false;
@@ -59,13 +59,13 @@ module.exports = {
                     if (buffer && (!file || !came)) process.stdout.write(buffer + '\n');
         
                     if (code !== 0) {
-                        throw new Error('Unexpected error.');
+                        reject(new Error('Unexpected error.'));
                     }
         
                     if (file) {
                         let config = stdout.split('#----BEGIN CONFIG----#');
                         if (config.length !== 2) {
-                            throw new Error('Unknown command response.');
+                            reject(new Error('Unknown command response.'));
                         }
             
                         config = config[1].split('#----END CONFIG----#')[0];
