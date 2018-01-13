@@ -1,6 +1,6 @@
 'use strict';
 
-const {exec, version} = require('../lib');
+const {exec, version} = require('../../src/lib');
 
 require('./build');
 
