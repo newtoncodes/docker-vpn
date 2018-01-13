@@ -48,7 +48,7 @@ module.exports = {
         }
     
         let result = iptables(volumes, iface);
-        if (file) writeFile(file, result);
+        if (file) writeFile(file, result + '\n');
         console.log(result);
     }
 };
