@@ -4,7 +4,7 @@ const {exec, exists, unlink, getVars,  version, writeFile} = require('../lib');
 
 
 module.exports = {
-    start: (name) => {
+    start: async (name) => {
         if (!exists('/var/lib/docker/volumes/vpn_' + name)) {
             throw new Error('Service "' + name + '" does not exist.');
         }
