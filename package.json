@@ -31,7 +31,7 @@
     "publish": "npm run push-image"
   },
   "bin": {
-    "docker-vpn": "node ./bin/app.js",
-    "vpn": "node ./bin/app.js"
+    "docker-vpn": "bin/app.js",
+    "vpn": "bin/app.js"
   }
 }
