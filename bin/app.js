@@ -24,9 +24,9 @@ const options = {
             server = server.trim().toLowerCase();
             if (!server) throw new Error('Invalid server name.');
             
-            if (!exists('/var/lib/docker/volumes/vpn_' + server)) {
-                throw new Error('Server "' + server + '" does not exist.');
-            }
+            // if (!exists('/var/lib/docker/volumes/vpn_' + server)) {
+            //     throw new Error('Server "' + server + '" does not exist.');
+            // }
             
             return server;
         }
