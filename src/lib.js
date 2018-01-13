@@ -104,5 +104,5 @@ module.exports = {
      * @param {string} cmd
      * @return {string}
      */
-    exec: (cmd) => exec(cmd, {stdio: 'inherit'}),
+    exec: (cmd) => exec(cmd, {stdio: 'inherit'}).toString('utf8'),
 };
