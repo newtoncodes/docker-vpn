@@ -32,8 +32,6 @@ module.exports = {
             console.log('');
             return;
         }
-    
-        console.log(ls);
         
         let volumes = ls.split('\n').map(r => r.split(/\s+/)[1].trim()).slice(1).filter(v => v.indexOf('vpn_') === 0).filter(v => {
             return exists('/var/lib/docker/volumes/' + v + '/_data/config/vars.env');
@@ -44,24 +42,13 @@ module.exports = {
         }
     
         if (!iface && interfaces.length === 1) iface = interfaces[0];
-        if (iface) {
-            if (!interfaces.includes(iface)) {
-                throw new Error('Network interface ' + iface + ' not found.');
-            }
-            
-            let result = iptables(volumes, iface);
-            if (file) writeFile(file, result);
-            console.log(result);
-            
-            return;
+        if (!iface) iface = await askIface();
+        if (!iface || !interfaces.includes(iface)) {
+            throw new Error('Network interface ' + iface + ' not found.');
         }
     
-        return new Promise(resolve => askIface(iface => {
-            let result = iptables(volumes, iface);
-            if (file) writeFile(file, result);
-            console.log(result);
-            
-            resolve();
-        }));
+        let result = iptables(volumes, iface);
+        if (file) writeFile(file, result);
+        console.log(result);
     }
 };
