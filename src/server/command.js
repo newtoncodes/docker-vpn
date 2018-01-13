@@ -1,12 +1,14 @@
 'use strict';
 
-const {exec, isWritable, version, writeFile, askClientName, askClientIp} = require('../lib');
+const {exec, isWritable, version, writeFile, askClientName, askClientIp, vpnExists} = require('../lib');
 
 const spawnAsync = require('child_process').spawn;
 
 
 module.exports = {
     command: async (name, cmd, args) => {
+        if (!vpnExists(name)) throw new Error('Service "' + name + '" does not exist.');
+        
         if (cmd === 'clients/create') {
             let client = await askClientName((args[0] || '').trim(), false);
             let ip = await askClientIp((args[1] || '').trim(), true);
