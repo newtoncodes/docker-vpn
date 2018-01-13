@@ -236,6 +236,7 @@ yargs
     .command(commands['clients'])
     .command(commands['issue'])
     .command(commands['revoke'])
+    .command(commands['iptables'])
     .command(commands['dependencies'])
     .help();
 

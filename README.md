@@ -15,7 +15,7 @@ Also comes with built-in dnsmasq server, that makes your life easier when you wa
 
 ```
 Usage: vpn <cmd> <args ...>
-   
+
 Commands:
   vpn install [server]                          Install a new vpn service config.
   vpn uninstall [server]                        Uninstall a vpn service config.
@@ -29,7 +29,7 @@ Commands:
   vpn issue <server> [client] [ip] [-s <file>]  Issue a new client certificate and config.
   vpn revoke <server> [client]                  Revoke a client certificate.
   vpn install-dependencies                      Install dependencies (Ubuntu/Debian).
-  
+
 Options:
   --version  Show version number  [boolean]
   --help     Show help  [boolean]
