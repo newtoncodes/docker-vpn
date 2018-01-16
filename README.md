@@ -50,7 +50,7 @@ curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -; sudo apt-get ins
 ## Install docker-vpn
 
 ```bash
-npm install docker-vpn
+npm install -g docker-vpn
 vpn --help # If the vpn command is busy, use docker-vpn
 ```
 
