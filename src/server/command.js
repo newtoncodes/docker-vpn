@@ -12,12 +12,12 @@ module.exports = {
         if (cmd === 'clients/create') {
             let client = await askClientName((args[0] || '').trim(), false);
             let ip = await askClientIp((args[1] || '').trim(), true);
-            
             let file = args[2] || null;
-    
-            args = [client];
-            if (ip) args.push(ip);
-    
+            let nopass = args[3] || false;
+            if (nopass) nopass = 'nopass';
+            else nopass = '';
+            
+            args = [client, ip || '', nopass === 'nopass' ? 'nopass' : ''];
             args = (args || []).map(function (s) {return (s || '').trim()});
     
             if (file && !isWritable(file)) {

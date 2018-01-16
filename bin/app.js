@@ -51,13 +51,19 @@ const options = {
         
         coerce: (ip) => {
             ip = ip.trim().toLowerCase();
-    
+            
             if (ip && !ip.match(/^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/)) {
                 throw new Error('Invalid client ip.');
             }
             
             return ip;
         }
+    },
+    
+    nopass: {
+        name: 'nopass',
+        description: 'Use password-less key.',
+        type: 'boolean'
     },
     
     config: {
@@ -173,16 +179,17 @@ const commands = {
         handler: (argv) => resolve(command(argv.server, 'clients/list'))
     },
     issue: {
-        command: 'issue <server> [client] [ip] [-s <file>]',
+        command: 'issue <server> [client] [ip] [--nopass] [-s <file>]',
         description: 'Issue a new client certificate and config.',
         
         builder: (yargs) => yargs
             .positional('server', options.server)
             .positional('client', options.client)
             .positional('ip', options.ip)
+            .option('nopass', options.nopass)
             .option('save', options.save),
     
-        handler: (argv) => resolve(command(argv.server, 'clients/create', [argv.client, argv.ip, argv.save]))
+        handler: (argv) => resolve(command(argv.server, 'clients/create', [argv.client, argv.ip, argv.save, argv.nopass]))
     },
     revoke: {
         command: 'revoke <server> [client]',

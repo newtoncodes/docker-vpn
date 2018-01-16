@@ -420,6 +420,7 @@ log-append  /vpn/log/full.log
 createClient() {
     local client="$1"
     local ip="$2"
+    local nopass="$3"
     local path=$(pwd)
     local config=$(cat /vpn/config/client.conf | sed ':a;N;$!ba;s/#[^\n]*//g' | sed ':a;N;$!ba;s/\n\n*/\n/g')
 
@@ -469,7 +470,7 @@ createClient() {
     cd /vpn/pki
 
     echo "Building client..."
-    easyrsa build-client-full ${client}
+    easyrsa build-client-full ${client} ${nopass}
 
     if [ "$ip" != "" ]; then
         echo "ifconfig-push $ip $SUBNET_MASK" > /vpn/ccd/${client}

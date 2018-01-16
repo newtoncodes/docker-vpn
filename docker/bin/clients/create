@@ -3,4 +3,4 @@
 dir=$(dirname "$0")
 source ${dir}/../../lib/vpn.sh
 
-createClient "$1" "$2"
+createClient "$1" "$2" "$3"
