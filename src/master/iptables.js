@@ -14,8 +14,8 @@ const iptables = (volumes, iface) => {
         let port = parseInt(vars['PORT'] || '1194');
         
         rule += `
-iptables -A INPUT  --dport ${port} -p ${protocol} -i ${iface} -m state --state NEW,ESTABLISHED -j ACCEPT
-iptables -A OUTPUT --sport ${port} -p ${protocol} -i ${iface} -m state --state ESTABLISHED     -j ACCEPT
+iptables -A INPUT  -p ${protocol} -i ${iface} --dport ${port} -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -p ${protocol} --sport ${port} -m state --state ESTABLISHED -j ACCEPT
 `;
     }
     
