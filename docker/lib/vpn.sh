@@ -509,6 +509,7 @@ dhcp-option DNS $DNS
 $r
 
 nobind
+auth-nocache
 
 persist-key
 persist-tun
