@@ -14,6 +14,8 @@ REDIRECT=""
 STATIC_IPS=""
 SUBNET_MASK=""
 SUBNET_IP=""
+AUTHY=""
+AUTHY_KEY=""
 
 atoi() {
     IP=$1; IPNUM=0
@@ -96,6 +98,8 @@ if [ -f ${vpnDir}/config/vars.env ]; then
     DNS=${DNS:-"10.8.0.1"}
     REDIRECT=${REDIRECT:-0}
     STATIC_IPS=${STATIC_IPS:-0}
+    AUTHY=${AUTHY:-0}
+    AUTHY_KEY=${AUTHY_KEY:-0}
 
     [[ ! "$SUBNET" =~ ^.*/[0-9]+$ ]] && SUBNET="$SUBNET/24"
     SUBNET_MASK=$(cidr2mask ${SUBNET})
@@ -223,6 +227,18 @@ install() {
     else STATIC_IPS="0"
     fi
 
+    echo "Authy integration (default: no):"
+    read AUTHY
+    if [ "$AUTHY" = "y" ] || [ "$AUTHY" = "yes" ] || [ "$AUTHY" = "Y" ] || [ "$AUTHY" = "YES" ]; then AUTHY="1"
+    else AUTHY="0"
+    fi
+
+    if [ "$AUTHY" == "1" ] ; then
+        echo "Authy API key:"
+        read AUTHY_KEY
+        if [ "$AUTHY_KEY" = "" ]; then AUTHY_KEY=""; fi
+    fi
+
     echo "Please edit the config files one by one, matching your requirements."
 
     echo "#!/bin/bash
@@ -240,6 +256,8 @@ SUBNET=$SUBNET
 DNS=$DNS
 REDIRECT=$REDIRECT
 STATIC_IPS=$STATIC_IPS
+AUTHY=$AUTHY
+AUTHY_KEY=$AUTHY_KEY
 " > /vpn/config/vars.env
 
     nano /vpn/config/vars.env
@@ -363,6 +381,13 @@ copyFiles() {
     cat /vpn/pki/private/${HOST}.key > /etc/openvpn/server.key
     cat /vpn/pki/issued/${HOST}.crt > /etc/openvpn/server.crt
 
+    touch /vpn/authy.conf
+    chmod -R 755 /vpn/authy.conf
+
+    mkdir -p /etc/openvpn/authy
+    rm -rf /etc/openvpn/authy/authy-vpn.conf
+    ln -s /vpn/authy.conf /etc/openvpn/authy/authy-vpn.conf
+
     chmod -R 755 /etc/openvpn/*
 
     chown -R nobody:nogroup /vpn/ip.txt
@@ -382,6 +407,11 @@ createConfig() {
     local serverIp=$(itoa "$i")
     local startIp=$(itoa "$i2")
     local endIp=$(maxIp "$SUBNET")
+
+    local aa
+    if [ "$AUTHY" = "1" ]; then aa="plugin /usr/lib/authy/authy-openvpn.so https://api.authy.com/protected/json $AUTHY_KEY nopam"
+    else aa=""
+    fi
 
     echo "
 local 0.0.0.0
@@ -407,6 +437,8 @@ dh /etc/openvpn/dh.pem
 tls-auth /etc/openvpn/ta.key 0
 
 key-direction 0
+
+$aa
 
 $config
 
@@ -495,6 +527,11 @@ createClient() {
     else r=""
     fi
 
+    local aa
+    if [ "$AUTHY" = "1" ]; then aa="auth-user-pass"
+    else aa=""
+    fi
+
     echo "Client created."
 
     echo "
@@ -507,6 +544,8 @@ remote $HOST $PORT
 proto $PROTOCOL
 dhcp-option DNS $DNS
 $r
+
+$aa
 
 nobind
 auth-nocache
