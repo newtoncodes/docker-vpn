@@ -1,6 +1,6 @@
 {
   "name": "docker-vpn",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Openvpn server with dnsmasq running on docker (cli). Very easy to use (for people, who forget a lot).",
   "keywords": [
     "openvpn",

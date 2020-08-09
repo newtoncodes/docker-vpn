@@ -44,7 +44,7 @@ The npm package makes it easy to use it all without having to remember commands.
 ## Install node
 
 ```bash
-curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -; sudo apt-get install -y nodejs
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -; sudo apt-get install -y nodejs
 ```
 
 ## Install docker-vpn
